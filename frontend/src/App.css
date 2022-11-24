@@ -1,0 +1,103 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&display=swap");
+
+body,
+html {
+	font-family: "Open Sans", sans-serif;
+	font-weight: 500;
+	font-size: 15px;
+}
+
+ul {
+	padding-left: 0px;
+}
+
+.spinner {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	height: 100vh;
+	margin-top: 10rem;
+}
+
+.header {
+	font-size: 2.5rem;
+}
+
+.footer {
+	position: relative;
+	left: 0;
+	bottom: 0;
+}
+
+.btn {
+	margin-left: 0.5rem;
+}
+
+.bnt-action {
+	background-color: #3c465f;
+	color: #f5f5f5;
+	border: none;
+}
+.bnt-many {
+	background-color: #739aff;
+	color: #f5f5f5;
+	border: none;
+}
+
+.bnt-many:hover {
+	background-color: #6b8de4;
+}
+
+.bnt-action:hover {
+	background-color: #252f46;
+}
+
+.page-with-navbar {
+	margin-left: 20%;
+	transition: 0.91s;
+}
+
+.page {
+	margin-left: 0%;
+	transition: 0.7s;
+}
+
+.noElement {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.icon-table {
+	margin: 0 0.9rem;
+	font-size: 1.8rem;
+	color: #252f46;
+	cursor: pointer;
+}
+
+.table-hover tbody tr td,
+.table-hover tbody tr th {
+	text-align: center;
+}
+
+.table-hover thead tr td,
+.table-hover thead tr th {
+	text-align: center;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+	background-color: #739aff;
+	color: #ffffff;
+}
+
+.deviceCheck {
+	margin-top: 1rem;
+}
+
+@media (min-width: 1700px) {
+	.page-with-navbar {
+		margin-left: 0%;
+		transition: 0.6s;
+	}
+}
