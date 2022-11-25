@@ -19,7 +19,7 @@ function Newclient() {
 
 	useEffect(() => {
 		feachLocations();
-	});
+	}, []);
 
 	async function feachLocations() {
 		axios

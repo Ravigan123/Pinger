@@ -111,6 +111,7 @@ class DeviceController {
 				ip_device,
 				type,
 				params,
+				status: "NEW",
 			});
 		} catch (err) {
 			return res.status(422).json({ status: "ERR", message: err.message });
@@ -156,6 +157,7 @@ class DeviceController {
 					ip_device,
 					type,
 					params,
+					status: "NEW",
 				});
 			}
 		} catch (err) {
@@ -188,7 +190,7 @@ class DeviceController {
 
 			const location_id = await Location.query()
 				.select("id")
-				.where("hash_location", location);
+				.where("name_location", location);
 
 			if (location_id.length === 0 || typeof location === "undefined")
 				return res.status(422).json({

@@ -3,10 +3,10 @@ import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import Modal from "react-modal";
 import EditClient from "./EditClient";
 import * as AiIcons from "react-icons/ai";
-import * as FaIcons from "react-icons/fa";
 import Spinner from "react-bootstrap/Spinner";
 
 function padTo2Digits(num) {
@@ -37,6 +37,7 @@ class Client extends React.Component {
 			dataEmpty: false,
 			showEditModal: false,
 			editClient: {},
+			searchName: "",
 		};
 	}
 
@@ -93,9 +94,25 @@ class Client extends React.Component {
 			table = (
 				<>
 					<h1 className='header'>Clients</h1>
-					<a className='float-end' href='/client/create'>
-						<Button className='bnt-action'>Add</Button>
-					</a>
+					<div className='buttonsOverTable'>
+						<Form.Group controlId='validationCustomName'>
+							<Form.Control
+								type='text'
+								className='searchInput'
+								placeholder='Name'
+								name='name'
+								value={this.state.searchName}
+								required
+								onChange={(e) => {
+									this.setState({ searchName: e.target.value });
+								}}
+							/>
+						</Form.Group>
+						<a className='float-end' href='/client/create'>
+							<Button className='bnt-action'>Add</Button>
+						</a>
+					</div>
+
 					<Modal isOpen={this.state.showEditModal} contentLabel='Edit client'>
 						<EditClient
 							name={this.state.editClient.name_client}
@@ -108,7 +125,7 @@ class Client extends React.Component {
 							onEdit={(client) => this.editClient(client)}
 						/>
 					</Modal>
-					<Table hover>
+					<Table className='mt-5' hover>
 						<thead>
 							<tr>
 								<th>Location</th>
@@ -121,44 +138,54 @@ class Client extends React.Component {
 							</tr>
 						</thead>
 						<tbody>
-							{this.state.clients.map((client) => {
-								const d = new Date(client.date_config);
-								const date_config = formatDate(d);
-								const nameNoSpace = client.name_client.replace(" ", "$");
-								return (
-									<tr key={client.id}>
-										<td>{client.name_location}</td>
-										<td>{client.name_client}</td>
-										<td>{client.hash_client}</td>
-										<td>{client.ip_client}</td>
-										<td>{date_config}</td>
-										<td>{client.config}</td>
-										<td>
-											<a
-												title='devices'
-												href={
-													"/client-device/" + client.id + "/" + nameNoSpace
-												}>
-												<AiIcons.AiTwotoneVideoCamera className='icon-table' />
-											</a>
+							{this.state.clients
+								.filter((value) => {
+									if (this.state.searchName === "all") {
+										return value;
+									} else if (
+										value["name_client"].includes(this.state.searchName)
+									) {
+										return value;
+									}
+								})
+								.map((client) => {
+									const d = new Date(client.date_config);
+									const date_config = formatDate(d);
+									const nameNoSpace = client.name_client.replace(" ", "$");
+									return (
+										<tr key={client.id}>
+											<td>{client.name_location}</td>
+											<td>{client.name_client}</td>
+											<td>{client.hash_client}</td>
+											<td>{client.ip_client}</td>
+											<td>{date_config}</td>
+											<td>{client.config}</td>
+											<td>
+												<a
+													title='devices'
+													href={
+														"/client-device/" + client.id + "/" + nameNoSpace
+													}>
+													<AiIcons.AiTwotoneVideoCamera className='icon-table' />
+												</a>
 
-											<AiIcons.AiFillEdit
-												title='edit'
-												className='icon-table'
-												onClick={(key) => {
-													this.editClientHandler(client);
-												}}
-											/>
+												<AiIcons.AiFillEdit
+													title='edit'
+													className='icon-table'
+													onClick={(key) => {
+														this.editClientHandler(client);
+													}}
+												/>
 
-											<AiIcons.AiFillDelete
-												title='delete'
-												className='icon-table'
-												onClick={(key) => this.deleteClient(client.id)}
-											/>
-										</td>
-									</tr>
-								);
-							})}
+												<AiIcons.AiFillDelete
+													title='delete'
+													className='icon-table'
+													onClick={(key) => this.deleteClient(client.id)}
+												/>
+											</td>
+										</tr>
+									);
+								})}
 						</tbody>
 					</Table>
 				</>

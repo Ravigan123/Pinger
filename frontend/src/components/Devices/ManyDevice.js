@@ -22,7 +22,7 @@ function ManyDevice() {
 
 	useEffect(() => {
 		feachLocations();
-	});
+	}, []);
 
 	async function feachLocations() {
 		axios

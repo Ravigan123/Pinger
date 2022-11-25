@@ -3,6 +3,7 @@ import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import Modal from "react-modal";
 import EditLocation from "./EditLocation";
 import * as AiIcons from "react-icons/ai";
@@ -17,6 +18,7 @@ class Location extends React.Component {
 			dataEmpty: false,
 			showEditModal: false,
 			editLocation: {},
+			searchLocation: "",
 		};
 	}
 
@@ -75,9 +77,24 @@ class Location extends React.Component {
 			table = (
 				<>
 					<h1 className='header'>Locations {this.state.locations["count"]}</h1>
-					<a className='float-end' href='/location/create'>
-						<Button className='bnt-action'>Add</Button>
-					</a>
+					<div className='buttonsOverTable'>
+						<Form.Group controlId='validationCustomName'>
+							<Form.Control
+								type='text'
+								className='searchInput'
+								placeholder='Name'
+								name='name'
+								value={this.state.searchLocation}
+								required
+								onChange={(e) => {
+									this.setState({ searchLocation: e.target.value });
+								}}
+							/>
+						</Form.Group>
+						<a className='float-end' href='/location/create'>
+							<Button className='bnt-action'>Add</Button>
+						</a>
+					</div>
 					<Modal isOpen={this.state.showEditModal} contentLabel='Edit location'>
 						<EditLocation
 							name={this.state.editLocation.name_location}
@@ -88,7 +105,7 @@ class Location extends React.Component {
 							onEdit={(location) => this.editLocation(location)}
 						/>
 					</Modal>
-					<Table hover>
+					<Table className='mt-5' hover>
 						<thead>
 							<tr>
 								<th>Name</th>
@@ -98,47 +115,63 @@ class Location extends React.Component {
 							</tr>
 						</thead>
 						<tbody>
-							{this.state.locations.map((location) => {
-								const nameNoSpace = location.name_location.replace(" ", "$");
+							{this.state.locations
+								.filter((value) => {
+									if (this.state.searchLocation === "all") {
+										return value;
+									} else if (
+										value["name_location"].includes(this.state.searchLocation)
+									) {
+										return value;
+									}
+								})
+								.map((location) => {
+									const nameNoSpace = location.name_location.replace(" ", "$");
 
-								return (
-									<tr key={location.id}>
-										<td>{location.name_location}</td>
-										<td>{location.hash_location}</td>
-										<td>{location.ip_location}</td>
-										<td>
-											<a
-												title='clients'
-												href={
-													"/location-client/" + location.id + "/" + nameNoSpace
-												}>
-												<FaIcons.FaUserAlt className='icon-table' />
-											</a>
-											<a
-												title='devices'
-												href={
-													"/location-device/" + location.id + "/" + nameNoSpace
-												}>
-												<AiIcons.AiTwotoneVideoCamera className='icon-table' />
-											</a>
+									return (
+										<tr key={location.id}>
+											<td>{location.name_location}</td>
+											<td>{location.hash_location}</td>
+											<td>{location.ip_location}</td>
+											<td>
+												<a
+													title='clients'
+													href={
+														"/location-client/" +
+														location.id +
+														"/" +
+														nameNoSpace
+													}>
+													<FaIcons.FaUserAlt className='icon-table' />
+												</a>
+												<a
+													title='devices'
+													href={
+														"/location-device/" +
+														location.id +
+														"/" +
+														nameNoSpace
+													}>
+													<AiIcons.AiTwotoneVideoCamera className='icon-table' />
+												</a>
 
-											<AiIcons.AiFillEdit
-												title='edit'
-												className='icon-table'
-												onClick={(key) => {
-													this.editLocationHandler(location);
-												}}
-											/>
+												<AiIcons.AiFillEdit
+													title='edit'
+													className='icon-table'
+													onClick={(key) => {
+														this.editLocationHandler(location);
+													}}
+												/>
 
-											<AiIcons.AiFillDelete
-												title='delete'
-												className='icon-table'
-												onClick={(key) => this.deleteLocation(location.id)}
-											/>
-										</td>
-									</tr>
-								);
-							})}
+												<AiIcons.AiFillDelete
+													title='delete'
+													className='icon-table'
+													onClick={(key) => this.deleteLocation(location.id)}
+												/>
+											</td>
+										</tr>
+									);
+								})}
 						</tbody>
 					</Table>
 				</>

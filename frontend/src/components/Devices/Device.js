@@ -2,6 +2,7 @@ import React from "react";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
+import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-modal";
 import EditDevice from "./EditDevice";
@@ -33,9 +34,11 @@ class Device extends React.Component {
 		super(props);
 		this.state = {
 			devices: [],
+			statuses: [],
 			dataEmpty: false,
 			showEditModal: false,
 			editDevice: {},
+			searchStatus: "",
 		};
 	}
 
@@ -53,6 +56,16 @@ class Device extends React.Component {
 			const devices = res.data;
 			this.state.dataEmpty = true;
 			this.setState({ devices });
+
+			const pom = [];
+
+			for (const device of devices) {
+				if (device["status"] === null) device["status"] = " ";
+				if (!pom.includes(device["status"])) {
+					pom.push(device["status"]);
+				}
+			}
+			this.setState({ statuses: pom });
 		});
 	}
 
@@ -92,13 +105,30 @@ class Device extends React.Component {
 			table = (
 				<>
 					<h1 className='header'>Devices</h1>
-					<a className='float-end' href='/device/many'>
-						<Button className='bnt-many'>Add Many</Button>
-					</a>
-
-					<a className='float-end' href='/device/create'>
-						<Button className='bnt-action'>Add</Button>
-					</a>
+					<div className='buttonsOverTable'>
+						<Form.Select
+							size='md'
+							aria-label='Default select example'
+							onChange={(e) => {
+								this.setState({ searchStatus: e.target.value });
+							}}
+							className='selectStatus'>
+							<option value='all'>Search status</option>
+							{this.state.statuses.map((stat, index) => {
+								return (
+									<option key={index} value={stat}>
+										{stat}
+									</option>
+								);
+							})}
+						</Form.Select>
+						<a className='float-end' href='/device/many'>
+							<Button className='bnt-many'>Add Many</Button>
+						</a>
+						<a className='float-end' href='/device/create'>
+							<Button className='bnt-action'>Add</Button>
+						</a>
+					</div>
 					<Modal isOpen={this.state.showEditModal} contentLabel='Edit device'>
 						<EditDevice
 							name={this.state.editDevice.name_device}
@@ -127,48 +157,79 @@ class Device extends React.Component {
 							</tr>
 						</thead>
 						<tbody>
-							{this.state.devices.map((device) => {
-								let date_ping = "";
-								let date_activity = "";
-								if (device.date_ping !== null) {
-									const dPing = new Date(device.date_ping);
-									date_ping = formatDate(dPing);
-								}
+							{this.state.devices
+								.filter((value) => {
+									if (this.state.searchStatus === "all") {
+										return value;
+									} else if (
+										value["status"].includes(this.state.searchStatus)
+									) {
+										return value;
+									}
+								})
+								.map((device) => {
+									let date_ping = "";
+									let date_activity = "";
+									if (device.date_ping !== null) {
+										const dPing = new Date(device.date_ping);
+										date_ping = formatDate(dPing);
+									}
 
-								if (device.date_activity !== null) {
-									const dActivity = new Date(device.date_activity);
-									date_activity = formatDate(dActivity);
-								}
+									if (device.date_activity !== null) {
+										const dActivity = new Date(device.date_activity);
+										date_activity = formatDate(dActivity);
+									}
+									let statusColor = "";
+									{
+										if (device.status === "OK")
+											statusColor = (
+												<td className='StatusColor StatusOK'>
+													{device.status}
+												</td>
+											);
+										else if (device.status === "ERR")
+											statusColor = (
+												<td className='StatusColor StatusERR'>
+													{device.status}
+												</td>
+											);
+										else
+											statusColor = (
+												<td className='StatusColor StatusNEW'>
+													{device.status}
+												</td>
+											);
+									}
 
-								return (
-									<tr key={device.id}>
-										<td>{device.status}</td>
-										<td>{device.name_location}</td>
-										<td>{device.name_device}</td>
-										<td>{device.ip_device}</td>
-										<td>{device.type}</td>
-										<td>{date_ping}</td>
-										<td>{date_activity}</td>
-										<td>{device.message}</td>
-										<td>{device.params}</td>
-										<td>
-											<AiIcons.AiFillEdit
-												title='edit'
-												className='icon-table'
-												onClick={(key) => {
-													this.editDeviceHandler(device);
-												}}
-											/>
+									return (
+										<tr key={device.id}>
+											{statusColor}
+											<td>{device.name_location}</td>
+											<td>{device.name_device}</td>
+											<td>{device.ip_device}</td>
+											<td>{device.type}</td>
+											<td>{date_ping}</td>
+											<td>{date_activity}</td>
+											<td>{device.message}</td>
+											<td>{device.params}</td>
+											<td>
+												<AiIcons.AiFillEdit
+													title='edit'
+													className='icon-table'
+													onClick={(key) => {
+														this.editDeviceHandler(device);
+													}}
+												/>
 
-											<AiIcons.AiFillDelete
-												title='delete'
-												className='icon-table'
-												onClick={(key) => this.deleteDevice(device.id)}
-											/>
-										</td>
-									</tr>
-								);
-							})}
+												<AiIcons.AiFillDelete
+													title='delete'
+													className='icon-table'
+													onClick={(key) => this.deleteDevice(device.id)}
+												/>
+											</td>
+										</tr>
+									);
+								})}
 						</tbody>
 					</Table>
 				</>

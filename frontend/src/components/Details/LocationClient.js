@@ -2,10 +2,9 @@ import React from "react";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
-import Button from "react-bootstrap/Button";
 import Modal from "react-modal";
+import Form from "react-bootstrap/Form";
 import EditClient from "../Clients/EditClient";
-import { Route, Link, Routes } from "react-router-dom";
 import * as AiIcons from "react-icons/ai";
 import Spinner from "react-bootstrap/Spinner";
 
@@ -39,11 +38,12 @@ class LocationClient extends React.Component {
 			location: "",
 			showEditModal: false,
 			editClient: {},
+			searchName: "",
 		};
 	}
 
 	componentDidMount() {
-		this.state.location = this.state.nameSpace.replace("$", " ");
+		this.setState({ location: this.state.nameSpace.replace("$", " ") });
 		this.feachClients();
 		Modal.setAppElement("body");
 	}
@@ -59,7 +59,7 @@ class LocationClient extends React.Component {
 			.get(`${process.env.REACT_APP_API_URL}location-client/` + id)
 			.then((res) => {
 				const clients = res.data;
-				this.state.dataEmpty = true;
+				this.setState({ dataEmpty: true });
 				this.setState({ clients });
 			});
 	}
@@ -100,6 +100,21 @@ class LocationClient extends React.Component {
 			table = (
 				<>
 					<h1 className='header'>Clients in {this.state.location}</h1>
+					<div className='buttonsOverTable'>
+						<Form.Group controlId='validationCustomName'>
+							<Form.Control
+								type='text'
+								className='searchInput'
+								placeholder='Name'
+								name='name'
+								value={this.state.searchName}
+								required
+								onChange={(e) => {
+									this.setState({ searchName: e.target.value });
+								}}
+							/>
+						</Form.Group>
+					</div>
 					<Modal isOpen={this.state.showEditModal} contentLabel='Edit client'>
 						<EditClient
 							name={this.state.editClient.name_client}
@@ -123,37 +138,47 @@ class LocationClient extends React.Component {
 							</tr>
 						</thead>
 						<tbody>
-							{this.state.clients.map((client) => {
-								let date_config = "";
+							{this.state.clients
+								.filter((value) => {
+									if (this.state.searchName === "all") {
+										return value;
+									} else if (
+										value["name_client"].includes(this.state.searchName)
+									) {
+										return value;
+									}
+								})
+								.map((client) => {
+									let date_config = "";
 
-								if (client.date_config !== null) {
-									const dConfig = new Date(client.date_config);
-									date_config = formatDate(dConfig);
-								}
-								return (
-									<tr key={client.id}>
-										<td>{client.name_client}</td>
-										<td>{client.ip_client}</td>
-										<td>{date_config}</td>
-										<td>{client.config}</td>
-										<td>
-											<AiIcons.AiFillEdit
-												title='edit'
-												className='icon-table'
-												onClick={(key) => {
-													this.editClientHandler(client);
-												}}
-											/>
+									if (client.date_config !== null) {
+										const dConfig = new Date(client.date_config);
+										date_config = formatDate(dConfig);
+									}
+									return (
+										<tr key={client.id}>
+											<td>{client.name_client}</td>
+											<td>{client.ip_client}</td>
+											<td>{date_config}</td>
+											<td>{client.config}</td>
+											<td>
+												<AiIcons.AiFillEdit
+													title='edit'
+													className='icon-table'
+													onClick={(key) => {
+														this.editClientHandler(client);
+													}}
+												/>
 
-											<AiIcons.AiFillDelete
-												title='delete'
-												className='icon-table'
-												onClick={(key) => this.deleteClient(client.id)}
-											/>
-										</td>
-									</tr>
-								);
-							})}
+												<AiIcons.AiFillDelete
+													title='delete'
+													className='icon-table'
+													onClick={(key) => this.deleteClient(client.id)}
+												/>
+											</td>
+										</tr>
+									);
+								})}
 						</tbody>
 					</Table>
 				</>

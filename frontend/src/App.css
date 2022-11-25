@@ -91,6 +91,30 @@ ul {
 	color: #ffffff;
 }
 
+.StatusColor {
+	font-size: 1.1rem;
+	font-weight: 700;
+}
+
+.StatusOK {
+	color: #4cdf08;
+}
+.StatusERR {
+	color: #c00000;
+}
+.StatusNEW {
+	color: #0269df;
+}
+
+.buttonsOverTable {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.selectStatus {
+	width: 20%;
+}
+
 .deviceCheck {
 	margin-top: 1rem;
 }

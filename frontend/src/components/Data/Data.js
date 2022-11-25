@@ -1,8 +1,8 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
-import Card from "react-bootstrap/Card";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
+import Form from "react-bootstrap/Form";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
 import Button from "react-bootstrap/Button";
@@ -14,6 +14,7 @@ class Data extends React.Component {
 		this.state = {
 			locations: [],
 			dataEmpty: false,
+			searchLocation: "",
 		};
 	}
 
@@ -41,10 +42,25 @@ class Data extends React.Component {
 			table = (
 				<>
 					<h1 className='header'>Dashboard</h1>
-					<a className='float-end' href='/location/create'>
-						<Button className='bnt-action'>Add</Button>
-					</a>
-					<Table hover>
+					<div className='buttonsOverTable'>
+						<Form.Group controlId='validationCustomName'>
+							<Form.Control
+								type='text'
+								className='searchInput'
+								placeholder='Name'
+								name='name'
+								value={this.state.searchLocation}
+								required
+								onChange={(e) => {
+									this.setState({ searchLocation: e.target.value });
+								}}
+							/>
+						</Form.Group>
+						<a className='float-end' href='/location/create'>
+							<Button className='bnt-action'>Add</Button>
+						</a>
+					</div>
+					<Table className='mt-5' hover>
 						<thead>
 							<tr>
 								<th>Name</th>
@@ -55,33 +71,49 @@ class Data extends React.Component {
 							</tr>
 						</thead>
 						<tbody>
-							{this.state.locations.map((location) => {
-								const nameNoSpace = location.name_location.replace(" ", "$");
-								return (
-									<tr key={location.id}>
-										<td>{location.name_location}</td>
-										<td>{location.ip_location}</td>
-										<td>{location.dev_all}</td>
-										<td>{location.dev_err}</td>
-										<td>
-											<a
-												title='clients'
-												href={
-													"/location-client/" + location.id + "/" + nameNoSpace
-												}>
-												<FaIcons.FaUserAlt className='icon-table' />
-											</a>
-											<a
-												title='devices'
-												href={
-													"/location-device/" + location.id + "/" + nameNoSpace
-												}>
-												<AiIcons.AiTwotoneVideoCamera className='icon-table' />
-											</a>
-										</td>
-									</tr>
-								);
-							})}
+							{this.state.locations
+								.filter((value) => {
+									if (this.state.searchLocation === "all") {
+										return value;
+									} else if (
+										value["name_location"].includes(this.state.searchLocation)
+									) {
+										return value;
+									}
+								})
+								.map((location) => {
+									const nameNoSpace = location.name_location.replace(" ", "$");
+									return (
+										<tr key={location.id}>
+											<td>{location.name_location}</td>
+											<td>{location.ip_location}</td>
+											<td>{location.dev_all}</td>
+											<td>{location.dev_err}</td>
+											<td>
+												<a
+													title='clients'
+													href={
+														"/location-client/" +
+														location.id +
+														"/" +
+														nameNoSpace
+													}>
+													<FaIcons.FaUserAlt className='icon-table' />
+												</a>
+												<a
+													title='devices'
+													href={
+														"/location-device/" +
+														location.id +
+														"/" +
+														nameNoSpace
+													}>
+													<AiIcons.AiTwotoneVideoCamera className='icon-table' />
+												</a>
+											</td>
+										</tr>
+									);
+								})}
 						</tbody>
 					</Table>
 				</>
