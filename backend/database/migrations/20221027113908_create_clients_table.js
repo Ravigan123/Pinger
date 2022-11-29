@@ -17,6 +17,7 @@ exports.up = function (knex) {
 		table.string("name_client", 100).notNullable();
 		table.string("ip_client", 20).notNullable();
 		table.boolean("config").notNullable();
+		table.integer("interval").notNullable();
 		table.string("params");
 		table.dateTime("date_config").notNullable();
 		table.timestamp("created_at").defaultTo(knex.raw("CURRENT_TIMESTAMP"));

@@ -120,6 +120,7 @@ class Client extends React.Component {
 							location={this.state.editClient.id_location}
 							params={this.state.editClient.params}
 							config={this.state.editClient.config}
+							interval={this.state.editClient.interval}
 							id={this.state.editClient.id}
 							onCancel={() => this.toogleModal()}
 							onEdit={(client) => this.editClient(client)}
@@ -134,6 +135,7 @@ class Client extends React.Component {
 								<th>Ip</th>
 								<th>Date activity</th>
 								<th>Current config</th>
+								<th>Interval</th>
 								<th>Action</th>
 							</tr>
 						</thead>
@@ -160,6 +162,7 @@ class Client extends React.Component {
 											<td>{client.ip_client}</td>
 											<td>{date_config}</td>
 											<td>{client.config}</td>
+											<td>{client.interval}</td>
 											<td>
 												<a
 													title='devices'

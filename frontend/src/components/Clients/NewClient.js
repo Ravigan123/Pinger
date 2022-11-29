@@ -12,6 +12,7 @@ function Newclient() {
 	const [ip, setIp] = useState("");
 	const [config, setConfig] = useState(false);
 	const [params, setParams] = useState("");
+	const [interval, setInterval] = useState("");
 	const [errors, setErrors] = useState({});
 	const [location, setLocation] = useState("");
 	const [locations, setlocations] = useState([]);
@@ -63,6 +64,10 @@ function Newclient() {
 		setParams(event.target.value);
 	};
 
+	const handleInterval = (event) => {
+		setInterval(event.target.value);
+	};
+
 	const handleChange = (config) => {
 		setConfig(!config);
 	};
@@ -91,6 +96,7 @@ function Newclient() {
 			ip_client: ip,
 			params,
 			enabled,
+			interval,
 		};
 		const backandValid = await addToBase(client);
 		const formErrors = validateForm(backandValid, client["id_location"]);
@@ -164,6 +170,21 @@ function Newclient() {
 					</FloatingLabel>
 				</Form.Group>
 
+				<Form.Group controlId='validationCustomInterval'>
+					<FloatingLabel
+						controlId='floatinghash'
+						label='Interval'
+						className='mb-3'>
+						<Form.Control
+							className='inputs'
+							type='text'
+							placeholder='Interval'
+							name='interval'
+							value={interval}
+							onChange={handleInterval}
+						/>
+					</FloatingLabel>
+				</Form.Group>
 				<Form.Group controlId='validationCustomParams'>
 					<FloatingLabel
 						controlId='floatinghash'

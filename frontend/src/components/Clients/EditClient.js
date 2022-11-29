@@ -12,6 +12,7 @@ function EditClient(props) {
 	const [ip, setIp] = useState(props.ip);
 	const [config, setConfig] = useState(props.config === 1 ? true : false);
 	const [params, setParams] = useState(props.params);
+	const [interval, setInterval] = useState(props.interval);
 	const [errors, setErrors] = useState({});
 	const [location, setLocation] = useState(props.location);
 	const [locations, setlocations] = useState([]);
@@ -62,6 +63,10 @@ function EditClient(props) {
 		setParams(event.target.value);
 	};
 
+	const handleInterval = (event) => {
+		setInterval(event.target.value);
+	};
+
 	const handleChange = (config) => {
 		setConfig(!config);
 	};
@@ -88,6 +93,7 @@ function EditClient(props) {
 			params,
 			changedName,
 			changedLocation,
+			interval,
 		};
 
 		const backendValid = await validclient(client);
@@ -152,6 +158,22 @@ function EditClient(props) {
 						<Form.Control.Feedback type='invalid'>
 							{errors.ip}
 						</Form.Control.Feedback>
+					</FloatingLabel>
+				</Form.Group>
+
+				<Form.Group controlId='validationCustomInterval'>
+					<FloatingLabel
+						controlId='floatinghash'
+						label='Interval'
+						className='mb-3'>
+						<Form.Control
+							className='inputs'
+							type='text'
+							placeholder='Interval'
+							name='interval'
+							value={interval}
+							onChange={handleInterval}
+						/>
 					</FloatingLabel>
 				</Form.Group>
 

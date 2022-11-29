@@ -190,7 +190,7 @@ class DeviceController {
 
 			const location_id = await Location.query()
 				.select("id")
-				.where("name_location", location);
+				.where("hash_location", location);
 
 			if (location_id.length === 0 || typeof location === "undefined")
 				return res.status(422).json({

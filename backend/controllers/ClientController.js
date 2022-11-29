@@ -17,6 +17,7 @@ class ClientController {
 					"config",
 					"params",
 					"date_config",
+					"interval",
 					"locations.name_location"
 				)
 				.innerJoin("locations", "locations.id", "clients.id_location")
@@ -67,7 +68,7 @@ class ClientController {
 			const type = params[0]["sendConfig"];
 
 			const client = await Client.query()
-				.select("id", "config")
+				.select("id", "config", "interval")
 				.where("hash_client", hash);
 
 			if (client.length === 0)
@@ -106,6 +107,7 @@ class ClientController {
 			config["date"] = new Date().toLocaleString("se-SE", {
 				timeZone: "Europe/Warsaw",
 			});
+			config["interval"] = client[0]["interval"];
 			config["IPS"] = [];
 
 			for (const dev of device) {
@@ -137,7 +139,7 @@ class ClientController {
 	async storeClient(req, res) {
 		try {
 			const { name_client, ip_client, params, enabled } = req.body;
-
+			let interval = req.body.interval;
 			const parsedName = name_client
 				.normalize("NFD")
 				.replace(/[\u0300-\u036f]/g, "");
@@ -151,6 +153,7 @@ class ClientController {
 					message: "The given client already exists",
 				});
 
+			if (interval === "") interval = 300;
 			const id_location = parseInt(req.body.id_location);
 			const date_config = new Date();
 			const newClient = await Client.query().insert({
@@ -161,6 +164,7 @@ class ClientController {
 				config: enabled,
 				params,
 				date_config,
+				interval,
 			});
 		} catch (err) {
 			return res.status(422).json({ status: "ERR", message: err.message });
@@ -215,6 +219,7 @@ class ClientController {
 				changedName,
 				changedLocation,
 			} = req.body;
+			let interval = req.body.interval;
 			const id_location = parseInt(req.body.id_location);
 			const { id } = req.params;
 			const parsedName = name_client
@@ -234,6 +239,7 @@ class ClientController {
 			}
 
 			const date_config = new Date();
+			if (interval === "") interval = 300;
 
 			const client = await Client.query().findById(id).patch({
 				id_location,
@@ -242,6 +248,7 @@ class ClientController {
 				config,
 				params,
 				date_config,
+				interval,
 			});
 
 			if (changedLocation === true) {

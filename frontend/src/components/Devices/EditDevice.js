@@ -16,6 +16,8 @@ function EditDevice(props) {
 	const [errors, setErrors] = useState({});
 	const [locations, setlocations] = useState([]);
 
+	console.log(props);
+
 	useEffect(() => {
 		feachLocations();
 	}, []);
